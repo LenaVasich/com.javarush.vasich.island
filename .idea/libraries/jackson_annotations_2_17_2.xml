@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="jackson-annotations-2.17.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/jackson-annotations-2.17.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/jackson-core-2.17.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/jackson-databind-2.17.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/jackson-dataformat-xml-2.17.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/jackson-dataformat-yaml-2.17.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/snakeyaml-2.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/stax2-api-4.2.1.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Работа/Учеба/JavaRush/Jackson/woodstox-core-6.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
