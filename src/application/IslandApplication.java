@@ -1,6 +1,8 @@
 package application;
 
 
+import settings.PredatorTypes;
+
 import java.util.Scanner;
 
 public class IslandApplication {

@@ -10,5 +10,14 @@ public enum HerbivoreTypes {
     BOAR,
     BUFFALO,
     DUCK,
-    CATERPILLAR
+    CATERPILLAR;
+
+    public static boolean isHerbivore(String name) {
+        for (HerbivoreTypes type : HerbivoreTypes.values()) {
+            if (type.name().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
