@@ -1,28 +1,11 @@
 package entity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
+import application.Cell;
 
 public class Predator extends Animal{
 
-
-    public Predator(String name, double weight, int maxSpeed, double maxSatiety, int maxQuantityOnOneCell) {
-        this.name = name;
-        this.weight = weight;
-        this.maxSpeed = maxSpeed;
-        this.maxSatiety = maxSatiety;
-        this.maxQuantityOnOneCell = maxQuantityOnOneCell;
+    public Predator(String name, double weight, int maxSpeed, double maxSatiety, int maxQuantityOnOneCell, Cell cell) {
+        super(name, weight, maxSpeed, maxSatiety, maxQuantityOnOneCell, cell);
     }
 
-    @Override
-    public String toString() {
-        return "Predator{" +
-                "название='" + name + '\'' +
-                ", вес=" + weight +
-                ", максСкорость=" + maxSpeed +
-                ", максНасыщение=" + maxSatiety +
-                ", максКоличествоНаКлетке=" + maxQuantityOnOneCell +
-                '}';
-    }
 }
