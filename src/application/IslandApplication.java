@@ -1,9 +1,10 @@
 package application;
 
 import entity.Animal;
+import entity.Herbivore;
+import entity.Predator;
 import util.AnimalFactory;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -28,22 +29,37 @@ public class IslandApplication {
 
         //дальше нужно запустить эмуляцию по дням и вывод статистики..........
 
-//        Cell[][] cells = island.getCells();
-//        for (int day = 1; day <= 4; day++) {
-//            for (int i = 0; i < cells.length; i++) {
-//                for (int j = 0; j < cells[i].length; j++) {
-//                    Cell cell = cells[i][j];
-//
-//                    for (String animalType : AnimalFactory.getAllAnimalTypes()) {
-//                        LinkedList<? extends Animal> animals = Animal.getAnimalsByType(cell, animalType);
-//                        Cell.reproduce(animals, cell);
-//                    }
-//
-//                    Cell.growPlants(cell.getPlants(), cell);
-//                }
-//            }
-//            Island.printStatistic(island, day);
-//        }
+        Cell[][] cells = island.getCells();
+        for (int day = 1; day <= 4; day++) {
+            System.out.println("Day " + day);
+            for (int i = 0; i < cells.length; i++) {
+                for (int j = 0; j < cells[i].length; j++) {
+                    Cell cell = cells[i][j];
+
+                    //System.out.println("Before moving - Cell " + i + "," + j + ": " + cell);
+
+                    cell.getHerbivores().forEach((type, animals) -> {
+                        Cell.reproduce(animals, cell);
+                        for (Herbivore animal : animals) {
+                            animal.move(cell, island);
+                        }
+                    });
+
+                    cell.getPredators().forEach((type, animals) -> {
+                        Cell.reproduce(animals, cell);
+                        for (Predator animal : animals) {
+                            animal.move(cell, island);
+                        }
+                    });
+
+                    Cell.growPlants(cell.getPlants(), cell);
+
+                    //System.out.println("After moving - Cell " + i + "," + j + ": " + cell);
+                }
+            }
+            Island.printStatistic(island, day);
+        }
+
 
 
     }

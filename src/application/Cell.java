@@ -1,6 +1,5 @@
 package application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Animal;
 import entity.Herbivore;
 import entity.Plant;
@@ -9,8 +8,6 @@ import settings.HerbivoreType;
 import settings.PredatorType;
 import util.AnimalFactory;
 import util.PlantFactory;
-
-import java.lang.reflect.Field;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -70,20 +67,6 @@ public class Cell {
         return plants;
     }
 
-    public static LinkedList<? extends Animal> getAnimalsByType(Cell cell, Enum<?> animalType) {
-        try {
-            // Используем имя enum для поиска поля
-            String fieldName = animalType.name();
-            Field field = Cell.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return (LinkedList<? extends Animal>) field.get(cell); // Доступ к полю конкретной ячейки
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid animal type: " + animalType.name(), e);
-        }
-    }
-
-
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -134,5 +117,22 @@ public class Cell {
     public EnumMap<HerbivoreType, LinkedList<Herbivore>> getHerbivores() {
         return herbivores;
     }
+
+    public int getAnimalCountByType(String typeName) {
+        String upperCaseType = typeName.toUpperCase();
+
+        if (HerbivoreType.isHerbivore(upperCaseType)) {
+            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
+            return herbivores.getOrDefault(herbivoreType, new LinkedList<>()).size();
+        }
+
+        if (PredatorType.isPredator(upperCaseType)) {
+            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
+            return predators.getOrDefault(predatorType, new LinkedList<>()).size();
+        }
+
+        throw new IllegalArgumentException("Нет такого животного: " + typeName);
+    }
+
 
 }

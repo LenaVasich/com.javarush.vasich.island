@@ -31,7 +31,7 @@ public class Island {
     }
 
     public static void printStatistic(Island island, int day) {
-        System.out.println("День " + day + ", общее число сущностей:");
+        System.out.println("День " + day + ":");
         TreeMap<String, Integer> totalCount = new TreeMap<>();
 
         for (HerbivoreType herbivore : HerbivoreType.values()) {
