@@ -28,8 +28,4 @@ public class Plant {
         return maxQuantityOnOneCell;
     }
 
-    public Cell getCell() {
-        return cell;
-    }
-
 }

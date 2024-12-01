@@ -41,7 +41,6 @@ public abstract class Animal {
             boolean hasEaten = false;
 
             try {
-                // Парсим JSON и получаем шансы на поедание
                 JsonNode rootNode = OBJECT_MAPPER.readTree(CHANCE_OF_FEED);
                 JsonNode animalNode = rootNode.get(this.name.toLowerCase());
                 if (animalNode == null) {
@@ -68,10 +67,9 @@ public abstract class Animal {
                             //System.out.println(name + " съел растение в клетке " + cell.getX() + "," + cell.getY());
                             this.increaseSatiety(Plant.getWeight());
                             hasEaten = true;
-                            break; // Завершаем попытки еды
+                            break;
                         }
                     } else if (!foodType.equals("plant") && cell.getAnimalCountByType(foodType) > 0) {
-                        // Едим другое животное
                         if (new Random().nextInt(100) < eatProbability) {
                             LinkedList<? extends Animal> animalsToEat = cell.getAnimalsByType(foodType);
                             if (!animalsToEat.isEmpty()) {
@@ -80,16 +78,14 @@ public abstract class Animal {
                                 //System.out.println(name + " съел " + prey.getName() + " в клетке " + cell.getX() + "," + cell.getY());
                                 this.increaseSatiety(prey.getWeight());
                                 hasEaten = true;
-                                break; // Завершаем попытки еды
+                                break;
                             }
                         }
                     }
                 }
 
-                // Если ничего не съели, снижаем сытость
                 if (!hasEaten) {
-                    this.decreaseSatiety(this.getMaxSatiety() * 0.2, cell);
-
+                    this.decreaseSatiety(this.getMaxSatiety() * 0.1, cell);
                 }
 
             } catch (Exception e) {
@@ -114,7 +110,7 @@ public abstract class Animal {
                     currentCell.getHerbivores().get(herbivoreType).remove(this); // удаление из текущей клетки
                     targetCell.getHerbivores().get(herbivoreType).add((Herbivore) this); // добавление в новую клетку
                 }
-                this.decreaseSatiety(this.getMaxSatiety() * 0.2, targetCell);
+                this.decreaseSatiety(this.getMaxSatiety() * 0.1, targetCell);
                 break;
             }
             attempts++;
@@ -150,7 +146,7 @@ public abstract class Animal {
     }
 
     public void die(Cell currentCell, String reason) {
-        if (this.actualSatiety <= 0) { // Защита от двойного вызова
+        if (this.actualSatiety <= 0) {
             if (this instanceof Predator) {
                 PredatorType predatorType = PredatorType.valueOf(this.getName().toUpperCase());
                 currentCell.getPredators().get(predatorType).remove(this);
@@ -158,8 +154,7 @@ public abstract class Animal {
                 HerbivoreType herbivoreType = HerbivoreType.valueOf(this.getName().toUpperCase());
                 currentCell.getHerbivores().get(herbivoreType).remove(this);
             }
-//            if (reason.equals("голод") && !this.getName().equals("CATERPILLAR"))
-//                System.out.println(this.getName() + " умер в клетке [" + currentCell.getX() + "][" + currentCell.getY() + "] от " + reason);
+//          System.out.println(this.getName() + " умер в клетке [" + currentCell.getX() + "][" + currentCell.getY() + "] от " + reason);
         }
     }
 
@@ -183,10 +178,6 @@ public abstract class Animal {
         return maxQuantityOnOneCell;
     }
 
-    public double getActualSatiety() {
-        return actualSatiety;
-    }
-
     public void increaseSatiety(double foodWeight) {
         this.actualSatiety += foodWeight;
     }
@@ -195,7 +186,6 @@ public abstract class Animal {
         this.actualSatiety -= amount;
         if (this.actualSatiety <= 0) {
             this.die(cell, "голод");
-            return; // Прерываем выполнение метода
         }
     }
 
