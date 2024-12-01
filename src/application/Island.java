@@ -1,6 +1,5 @@
 package application;
 
-import entity.Animal;
 import entity.Plant;
 import settings.HerbivoreType;
 import settings.PredatorType;
@@ -9,29 +8,43 @@ import java.util.TreeMap;
 
 public class Island {
 
-    private int width; //x
-    private int height; //y
-    private Cell[][] cells; //массив клеток
+    private static Island island;
+    private int width; // x
+    private int height; // y
+    private Cell[][] cells; // массив клеток
 
-    public Island(int width, int height) {
+    private Island(int width, int height) {
         this.width = width;
         this.height = height;
-
         cells = new Cell[width][height];
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                cells[i][j] = new Cell(width, height);
-                //System.out.println(cells[x][y]);
+                cells[i][j] = new Cell(i, j);
             }
         }
 
         System.out.println("Остров создан! Размер: " + width + "x" + height);
-
+        //printCells();
     }
 
-    public static void printStatistic(Island island, int day) {
-        System.out.println("День " + day + ":");
+    public static Island getIsland(int width, int height) {
+        if (island == null) {
+            island = new Island(width, height); // Создание острова, если его нет
+        }
+        return island;
+    }
+
+    public void printCells() {
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                System.out.println(cells[i][j]);
+            }
+        }
+    }
+
+    public void printStatistic(int day) {
+        System.out.print("День " + day + " итого:  ");
         TreeMap<String, Integer> totalCount = new TreeMap<>();
 
         for (HerbivoreType herbivore : HerbivoreType.values()) {
@@ -62,7 +75,6 @@ public class Island {
         System.out.println();
     }
 
-
     public int getWidth() {
         return width;
     }
@@ -75,3 +87,4 @@ public class Island {
         return cells;
     }
 }
+

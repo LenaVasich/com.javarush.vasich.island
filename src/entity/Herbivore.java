@@ -8,10 +8,5 @@ public class Herbivore extends Animal {
         super(name, weight, maxSpeed, maxSatiety, maxQuantityOnOneCell, cell);
     }
 
-    @Override
-    public void eat() {
-        super.eat();
-        System.out.println("а теперь поем травы....");
-    }
 
 }

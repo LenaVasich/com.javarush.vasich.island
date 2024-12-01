@@ -2,10 +2,12 @@ package entity;
 
 import application.Cell;
 
+import java.util.LinkedList;
+
 public class Plant {
 
     private static final String picture = "🌱";
-    private static final double  weight = 1;
+    private static final int  weight = 1;
     private static final int maxQuantityOnOneCell = 200;
 
     private Cell cell;
@@ -29,4 +31,5 @@ public class Plant {
     public Cell getCell() {
         return cell;
     }
+
 }

@@ -36,9 +36,16 @@ public class Cell {
         plants = PlantFactory.createPlantsList(this);
     }
 
-    public static <T extends Animal> LinkedList<T> reproduce(LinkedList<T> animals, Cell cell) {
+
+    public void reproduce() {
+        predators.values().forEach(this::reproduceForAnimalType);
+        herbivores.values().forEach(this::reproduceForAnimalType);
+        growPlants();
+    }
+
+    private <T extends Animal> void reproduceForAnimalType(LinkedList<T> animals) {
         int size = animals.size();
-        if (size == 0) return animals;
+        if (size == 0) return;
 
         T animal = animals.get(0);
         int totalNewAnimals = 0;
@@ -51,51 +58,100 @@ public class Cell {
 
         for (int i = 0; i < totalNewAnimals; i++) {
             @SuppressWarnings("unchecked")
-            T newAnimal = (T) AnimalFactory.createAnimal(animal.getName(), cell, animal.getClass());
+            T newAnimal = (T) AnimalFactory.createAnimal(animal.getName(), this, animal.getClass());
             animals.add(newAnimal);
         }
-        return animals;
     }
 
-    public static LinkedList<Plant> growPlants(LinkedList<Plant> plants, Cell cell) {
-        if (plants.size() < Plant.getMaxQuantityOnOneCell()) {
-            int newPlants = new Random().nextInt(Plant.getMaxQuantityOnOneCell() - plants.size()) + 1;
+    private void growPlants() {
+        int currentPlantCount = plants.size();
+        int maxPlants = Plant.getMaxQuantityOnOneCell();
+        if (currentPlantCount < maxPlants) {
+            int newPlants = new Random().nextInt(maxPlants - currentPlantCount) + 1;
             for (int i = 0; i < newPlants; i++) {
-                plants.add(new Plant(cell));
+                plants.add(new Plant(this));
             }
         }
-        return plants;
     }
+
+    public int getAnimalCountByType(String typeName) {
+        String upperCaseType = typeName.toUpperCase();
+
+        if (HerbivoreType.isHerbivore(upperCaseType)) {
+            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
+            return herbivores.getOrDefault(herbivoreType, new LinkedList<>()).size();
+        }
+
+        if (PredatorType.isPredator(upperCaseType)) {
+            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
+            return predators.getOrDefault(predatorType, new LinkedList<>()).size();
+        }
+
+        throw new IllegalArgumentException("Нет такого животного: " + typeName);
+    }
+
+    public LinkedList<? extends Animal> getAnimalsByType(String type) {
+        String upperCaseType = type.toUpperCase();
+
+        if (HerbivoreType.isHerbivore(upperCaseType)) {
+            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
+            return herbivores.getOrDefault(herbivoreType, new LinkedList<>());
+        }
+
+        if (PredatorType.isPredator(upperCaseType)) {
+            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
+            return predators.getOrDefault(predatorType, new LinkedList<>());
+        }
+
+        throw new IllegalArgumentException("Нет такого животного: " + type);
+    }
+
+    public LinkedList<Animal> getAllAnimals() {
+        LinkedList<Animal> allAnimals = new LinkedList<>();
+
+        for (LinkedList<Predator> predatorList : predators.values()) {
+            allAnimals.addAll(predatorList);
+        }
+
+        for (LinkedList<Herbivore> herbivoreList : herbivores.values()) {
+            allAnimals.addAll(herbivoreList);
+        }
+
+        return allAnimals;
+    }
+
+
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Cell[").append(x).append("][").append(y).append("]:\n");
+        StringBuilder cellInfo = new StringBuilder();
+        cellInfo.append("Cell[").append(x).append("][").append(y).append("]: ");
 
-        sb.append("Predators: ");
+        cellInfo.append("Predators: ");
         predators.forEach((type, list) -> {
             if (!list.isEmpty()) {
-                sb.append(type.getPicture()).append("=").append(list.size()).append(" ");
+                cellInfo.append(type.getPicture()).append("=").append(list.size()).append(" ");
             }
         });
-        sb.append("\n");
+        //cellInfo.append("\n");
 
-        sb.append("Herbivores: ");
+        cellInfo.append("Herbivores: ");
         herbivores.forEach((type, list) -> {
             if (!list.isEmpty()) {
-                sb.append(type.getPicture()).append("=").append(list.size()).append(" ");
+                cellInfo.append(type.getPicture()).append("=").append(list.size()).append(" ");
             }
         });
-        sb.append("\n");
+        //cellInfo.append("\n");
 
-        sb.append("Plants: ");
+        cellInfo.append("Plants: ");
         if (!plants.isEmpty()) {
-            sb.append(plants.get(0).getPicture()).append("=").append(plants.size());
+            cellInfo.append(Plant.getPicture()).append("=").append(plants.size());
         } else {
-            sb.append("none");
+            cellInfo.append("none");
         }
 
-        return sb.toString().trim();
+
+        return cellInfo.toString().trim();
     }
 
     public int getX() {
@@ -117,22 +173,5 @@ public class Cell {
     public EnumMap<HerbivoreType, LinkedList<Herbivore>> getHerbivores() {
         return herbivores;
     }
-
-    public int getAnimalCountByType(String typeName) {
-        String upperCaseType = typeName.toUpperCase();
-
-        if (HerbivoreType.isHerbivore(upperCaseType)) {
-            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
-            return herbivores.getOrDefault(herbivoreType, new LinkedList<>()).size();
-        }
-
-        if (PredatorType.isPredator(upperCaseType)) {
-            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
-            return predators.getOrDefault(predatorType, new LinkedList<>()).size();
-        }
-
-        throw new IllegalArgumentException("Нет такого животного: " + typeName);
-    }
-
 
 }
