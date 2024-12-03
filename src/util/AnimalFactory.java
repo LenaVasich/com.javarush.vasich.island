@@ -10,9 +10,10 @@ import settings.HerbivoreType;
 import settings.PredatorType;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class AnimalFactory {
@@ -61,12 +62,5 @@ public class AnimalFactory {
         } catch (Exception e) {
             throw new RuntimeException("Ошибка в createAnimalList...", e);
         }
-    }
-
-    public static List<String> getAllAnimalTypes() {
-        return Stream.concat(
-                Arrays.stream(HerbivoreType.values()).map(h -> h.name().toLowerCase()),
-                Arrays.stream(PredatorType.values()).map(p -> p.name().toLowerCase())
-        ).collect(Collectors.toList());
     }
 }

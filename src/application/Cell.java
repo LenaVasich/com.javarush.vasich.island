@@ -94,19 +94,21 @@ public class Cell {
         String upperCaseType = type.toUpperCase();
 
         if (HerbivoreType.isHerbivore(upperCaseType)) {
-            return herbivores.getOrDefault(HerbivoreType.valueOf(upperCaseType), Collections.synchronizedList(new ArrayList<>()));
+            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
+            return herbivores.getOrDefault(herbivoreType, Collections.synchronizedList(new ArrayList<>()));
         }
 
         if (PredatorType.isPredator(upperCaseType)) {
-            return predators.getOrDefault(PredatorType.valueOf(upperCaseType), Collections.synchronizedList(new ArrayList<>()));
+            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
+            return predators.getOrDefault(predatorType, Collections.synchronizedList(new ArrayList<>()));
         }
 
         throw new IllegalArgumentException("Нет такого животного: " + type);
     }
 
-
     public List<Animal> getAllAnimals() {
         List<Animal> allAnimals = Collections.synchronizedList(new ArrayList<>());
+
         predators.values().forEach(allAnimals::addAll);
         herbivores.values().forEach(allAnimals::addAll);
         return allAnimals;

@@ -104,7 +104,7 @@ public abstract class Animal {
 
     public void move(Cell currentCell, Island island) {
         int attempts = 0;
-        while (attempts < 30) {
+        while (attempts < 10) {
             Cell targetCell = chooseCellToMove(this, currentCell, island);
 
             if (targetCell != currentCell) {
@@ -118,7 +118,7 @@ public abstract class Animal {
                     currentCell.getHerbivores().get(herbivoreType).remove(this); // удаление из текущей клетки
                     targetCell.getHerbivores().get(herbivoreType).add((Herbivore) this); // добавление в новую клетку
                 }
-                this.decreaseSatiety(this.getMaxSatiety() * 0.1, targetCell);
+                this.decreaseSatiety(this.getMaxSatiety() * 0.5, targetCell);
                 break;
             }
             attempts++;
