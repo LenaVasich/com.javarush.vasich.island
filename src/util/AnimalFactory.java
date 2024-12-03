@@ -10,9 +10,9 @@ import settings.HerbivoreType;
 import settings.PredatorType;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class AnimalFactory {
@@ -42,17 +42,17 @@ public class AnimalFactory {
         }
     }
 
-    public static <T extends Animal> LinkedList<T> createAnimalList(String name, Cell cell, Class<T> clazz) {
+    public static <T extends Animal> List<T> createAnimalList(String name, Cell cell, Class<T> clazz) {
         try {
             JsonNode rootNode = OBJECT_MAPPER.readTree(ENTITY_SETTINGS);
             JsonNode animalType = rootNode.get(name.toLowerCase());
 
-            if (animalType == null) throw new IllegalArgumentException("No settings found for animal: " + name);
+            if (animalType == null) throw new IllegalArgumentException("Не найдено параметров для животного: " + name);
 
             int maxQuantityOnOneCell = animalType.get("maxQuantityOnOneCell").asInt();
             int randomQuantity = (int) (Math.random() * maxQuantityOnOneCell) + 1;
 
-            LinkedList<T> animalList = new LinkedList<>();
+            List<T> animalList = Collections.synchronizedList(new ArrayList<>());
 
             for (int i = 0; i < randomQuantity; i++) {
                 animalList.add(createAnimal(name, cell, clazz));
@@ -64,13 +64,9 @@ public class AnimalFactory {
     }
 
     public static List<String> getAllAnimalTypes() {
-        List<String> types = new ArrayList<>();
-        for (HerbivoreType herbivore : HerbivoreType.values()) {
-            types.add(herbivore.name().toLowerCase());
-        }
-        for (PredatorType predator : PredatorType.values()) {
-            types.add(predator.name().toLowerCase());
-        }
-        return types;
+        return Stream.concat(
+                Arrays.stream(HerbivoreType.values()).map(h -> h.name().toLowerCase()),
+                Arrays.stream(PredatorType.values()).map(p -> p.name().toLowerCase())
+        ).collect(Collectors.toList());
     }
 }

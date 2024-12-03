@@ -8,17 +8,17 @@ import settings.HerbivoreType;
 import settings.PredatorType;
 import util.AnimalFactory;
 import util.PlantFactory;
-import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.Random;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Cell {
 
     private int x, y;
 
-    private EnumMap<PredatorType, LinkedList<Predator>> predators = new EnumMap<>(PredatorType.class);
-    private EnumMap<HerbivoreType, LinkedList<Herbivore>> herbivores = new EnumMap<>(HerbivoreType.class);
-    private LinkedList<Plant> plants = new LinkedList<>();
+    private ConcurrentHashMap<PredatorType, List<Predator>> predators = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<HerbivoreType, List<Herbivore>> herbivores = new ConcurrentHashMap<>();
+    private List<Plant> plants = Collections.synchronizedList(new ArrayList<>());
 
     public Cell(int x, int y) {
 
@@ -43,7 +43,7 @@ public class Cell {
         growPlants();
     }
 
-    private <T extends Animal> void reproduceForAnimalType(LinkedList<T> animals) {
+    private <T extends Animal> void reproduceForAnimalType(List<T> animals) {
         int size = animals.size();
         if (size == 0) return;
 
@@ -79,48 +79,38 @@ public class Cell {
 
         if (HerbivoreType.isHerbivore(upperCaseType)) {
             HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
-            return herbivores.getOrDefault(herbivoreType, new LinkedList<>()).size();
+            return herbivores.getOrDefault(herbivoreType, Collections.synchronizedList(new ArrayList<>())).size();
         }
 
         if (PredatorType.isPredator(upperCaseType)) {
             PredatorType predatorType = PredatorType.valueOf(upperCaseType);
-            return predators.getOrDefault(predatorType, new LinkedList<>()).size();
+            return predators.getOrDefault(predatorType, Collections.synchronizedList(new ArrayList<>())).size();
         }
 
         throw new IllegalArgumentException("Нет такого животного: " + typeName);
     }
 
-    public LinkedList<? extends Animal> getAnimalsByType(String type) {
+    public List<? extends Animal> getAnimalsByType(String type) {
         String upperCaseType = type.toUpperCase();
 
         if (HerbivoreType.isHerbivore(upperCaseType)) {
-            HerbivoreType herbivoreType = HerbivoreType.valueOf(upperCaseType);
-            return herbivores.getOrDefault(herbivoreType, new LinkedList<>());
+            return herbivores.getOrDefault(HerbivoreType.valueOf(upperCaseType), Collections.synchronizedList(new ArrayList<>()));
         }
 
         if (PredatorType.isPredator(upperCaseType)) {
-            PredatorType predatorType = PredatorType.valueOf(upperCaseType);
-            return predators.getOrDefault(predatorType, new LinkedList<>());
+            return predators.getOrDefault(PredatorType.valueOf(upperCaseType), Collections.synchronizedList(new ArrayList<>()));
         }
 
         throw new IllegalArgumentException("Нет такого животного: " + type);
     }
 
-    public LinkedList<Animal> getAllAnimals() {
-        LinkedList<Animal> allAnimals = new LinkedList<>();
 
-        for (LinkedList<Predator> predatorList : predators.values()) {
-            allAnimals.addAll(predatorList);
-        }
-
-        for (LinkedList<Herbivore> herbivoreList : herbivores.values()) {
-            allAnimals.addAll(herbivoreList);
-        }
-
+    public List<Animal> getAllAnimals() {
+        List<Animal> allAnimals = Collections.synchronizedList(new ArrayList<>());
+        predators.values().forEach(allAnimals::addAll);
+        herbivores.values().forEach(allAnimals::addAll);
         return allAnimals;
     }
-
-
 
     @Override
     public String toString() {
@@ -133,7 +123,6 @@ public class Cell {
                 cellInfo.append(type.getPicture()).append("=").append(list.size()).append(" ");
             }
         });
-        //cellInfo.append("\n");
 
         cellInfo.append("Herbivores: ");
         herbivores.forEach((type, list) -> {
@@ -141,7 +130,6 @@ public class Cell {
                 cellInfo.append(type.getPicture()).append("=").append(list.size()).append(" ");
             }
         });
-        //cellInfo.append("\n");
 
         cellInfo.append("Plants: ");
         if (!plants.isEmpty()) {
@@ -162,16 +150,17 @@ public class Cell {
         return y;
     }
 
-    public LinkedList<Plant> getPlants() {
+    public List<Plant> getPlants() {
         return plants;
     }
 
-    public EnumMap<PredatorType, LinkedList<Predator>> getPredators() {
+    public ConcurrentHashMap<PredatorType, List<Predator>> getPredators() {
         return predators;
     }
 
-    public EnumMap<HerbivoreType, LinkedList<Herbivore>> getHerbivores() {
+    public ConcurrentHashMap<HerbivoreType, List<Herbivore>> getHerbivores() {
         return herbivores;
     }
-
 }
+
+

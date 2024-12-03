@@ -32,7 +32,7 @@ public abstract class Animal {
         this.maxSpeed = maxSpeed;
         this.maxSatiety = maxSatiety;
         this.maxQuantityOnOneCell = maxQuantityOnOneCell;
-        this.actualSatiety = maxSatiety; // начальная сытость на максимум
+        this.actualSatiety = maxSatiety;
         this.cell = cell;
     }
 
@@ -47,7 +47,7 @@ public abstract class Animal {
                     throw new IllegalArgumentException("Не найдены параметры для животного: " + name);
                 }
 
-                Map<String, Integer> whoCanBeEaten = new HashMap<>();
+                Map<String, Integer> whoCanBeEaten = new HashMap<>(); //союираем мапу кто в принципе может быть съеден этим типом
                 animalNode.fieldNames().forEachRemaining(foodType -> {
                     int probability = animalNode.get(foodType).asInt();
                     if (probability > 0) {
@@ -61,20 +61,27 @@ public abstract class Animal {
                     int eatProbability = entry.getValue();
 
                     if (foodType.equals("plant") && !cell.getPlants().isEmpty()) {
-                        // Едим растение
                         if (new Random().nextInt(100) < eatProbability) {
-                            cell.getPlants().removeFirst();
-                            //System.out.println(name + " съел растение в клетке " + cell.getX() + "," + cell.getY());
-                            this.increaseSatiety(Plant.getWeight());
-                            hasEaten = true;
-                            break;
+                            synchronized (cell.getPlants()) {
+                                Iterator<Plant> plantIterator = cell.getPlants().iterator();
+                                if (plantIterator.hasNext()) {
+                                    plantIterator.next();
+                                    plantIterator.remove();
+                                    //System.out.println(name + " съел растение в клетке " + cell.getX() + "," + cell.getY());
+                                    this.increaseSatiety(Plant.getWeight());
+                                    hasEaten = true;
+                                    break;
+                                }
+                            }
                         }
                     } else if (!foodType.equals("plant") && cell.getAnimalCountByType(foodType) > 0) {
-                        if (new Random().nextInt(100) < eatProbability) {
-                            LinkedList<? extends Animal> animalsToEat = cell.getAnimalsByType(foodType);
-                            if (!animalsToEat.isEmpty()) {
-                                Animal prey = animalsToEat.removeFirst(); // Убираем из списка
-                                prey.die(cell, "убили"); // Убиваем добычу
+                        List<? extends Animal> animalsToEat = cell.getAnimalsByType(foodType);
+                        synchronized (animalsToEat) {
+                            Iterator<? extends Animal> animalIterator = animalsToEat.iterator();
+                            if (animalIterator.hasNext()) {
+                                Animal prey = animalIterator.next();
+                                animalIterator.remove();
+                                prey.die(cell); // "убили"
                                 //System.out.println(name + " съел " + prey.getName() + " в клетке " + cell.getX() + "," + cell.getY());
                                 this.increaseSatiety(prey.getWeight());
                                 hasEaten = true;
@@ -93,6 +100,7 @@ public abstract class Animal {
             }
         }
     }
+
 
     public void move(Cell currentCell, Island island) {
         int attempts = 0;
@@ -145,7 +153,7 @@ public abstract class Animal {
         return cell.getAnimalCountByType(animal.getName()) < animal.maxQuantityOnOneCell;
     }
 
-    public void die(Cell currentCell, String reason) {
+    public void die(Cell currentCell) {
         if (this.actualSatiety <= 0) {
             if (this instanceof Predator) {
                 PredatorType predatorType = PredatorType.valueOf(this.getName().toUpperCase());
@@ -185,7 +193,7 @@ public abstract class Animal {
     public void decreaseSatiety(double amount, Cell cell) {
         this.actualSatiety -= amount;
         if (this.actualSatiety <= 0) {
-            this.die(cell, "голод");
+            this.die(cell);//, "голод"
         }
     }
 

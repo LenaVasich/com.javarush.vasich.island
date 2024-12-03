@@ -6,15 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Plant;
 
 import java.io.File;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PlantFactory {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final File settingsFile = new File("src/settings/entitySettings.json");
 
-    public static LinkedList<Plant> createPlantsList(Cell cell) {
-        LinkedList<Plant> plants = new LinkedList<>();
+    public static List<Plant> createPlantsList(Cell cell) {
+        List<Plant> plants = Collections.synchronizedList(new ArrayList<>());
         try {
             JsonNode rootNode = objectMapper.readTree(settingsFile);
             JsonNode plantNode = rootNode.get("plant");
@@ -30,6 +32,5 @@ public class PlantFactory {
         }
         return plants;
     }
-
 
 }
