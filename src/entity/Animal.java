@@ -81,7 +81,7 @@ public abstract class Animal {
                             if (animalIterator.hasNext()) {
                                 Animal prey = animalIterator.next();
                                 animalIterator.remove();
-                                prey.die(cell); // "убили"
+                                prey.die(cell);
                                 //System.out.println(name + " съел " + prey.getName() + " в клетке " + cell.getX() + "," + cell.getY());
                                 this.increaseSatiety(prey.getWeight());
                                 hasEaten = true;

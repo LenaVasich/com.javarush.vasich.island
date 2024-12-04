@@ -5,11 +5,13 @@ import settings.HerbivoreType;
 import settings.PredatorType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 public class Island {
 
@@ -52,7 +54,7 @@ public class Island {
 
     public static Island getIsland(int width, int height) {
         if (island == null) {
-            island = new Island(width, height); // Создание острова, если его нет
+            island = new Island(width, height);
         }
         return island;
     }
@@ -69,12 +71,10 @@ public class Island {
         System.out.print("День " + day + " итого:  ");
         TreeMap<String, Integer> totalCount = new TreeMap<>();
 
-        for (HerbivoreType herbivore : HerbivoreType.values()) {
-            totalCount.put(herbivore.getPicture(), 0);
-        }
-        for (PredatorType predator : PredatorType.values()) {
-            totalCount.put(predator.getPicture(), 0);
-        }
+        Stream.concat(
+                Arrays.stream(HerbivoreType.values()).map(HerbivoreType::getPicture),
+                Arrays.stream(PredatorType.values()).map(PredatorType::getPicture)
+        ).forEach(picture -> totalCount.put(picture, 0));
         totalCount.put(Plant.getPicture(), 0);
 
         for (int i = 0; i < island.cells.length; i++) {
