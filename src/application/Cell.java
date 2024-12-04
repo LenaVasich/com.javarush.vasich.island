@@ -25,17 +25,14 @@ public class Cell {
         this.x = x;
         this.y = y;
 
-        for (PredatorType type : PredatorType.values()) {
-            predators.put(type, AnimalFactory.createAnimalList(type.name(), this, Predator.class));
-        }
+        Arrays.stream(PredatorType.values())
+                .forEach(type -> predators.put(type, AnimalFactory.createAnimalList(type.name(), this, Predator.class)));
 
-        for (HerbivoreType type : HerbivoreType.values()) {
-            herbivores.put(type, AnimalFactory.createAnimalList(type.name(), this, Herbivore.class));
-        }
+        Arrays.stream(HerbivoreType.values())
+                .forEach(type -> herbivores.put(type, AnimalFactory.createAnimalList(type.name(), this, Herbivore.class)));
 
         plants = PlantFactory.createPlantsList(this);
     }
-
 
     public void reproduce() {
         predators.values().forEach(this::reproduceForAnimalType);

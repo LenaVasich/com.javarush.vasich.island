@@ -1,8 +1,6 @@
 package application;
 
 import entity.Animal;
-import util.AnimalFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,7 +8,7 @@ import java.util.concurrent.*;
 
 public class IslandApplication {
 
-    private static final int NUM_THREADS = 4;
+    private static final int NUM_THREADS = 6;
     static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(NUM_THREADS);
 
     public static void main(String[] args) throws InterruptedException {
@@ -28,7 +26,7 @@ public class IslandApplication {
 
         System.out.println("Начинаем симуляцию...");
 
-        CountDownLatch latch = new CountDownLatch(width * height);
+        CountDownLatch latch = new CountDownLatch(NUM_THREADS); //width*height??
         List<Callable<Void>> tasks = new ArrayList<>();
 
         for (int day = 1; day <= days; day++) {
@@ -38,14 +36,13 @@ public class IslandApplication {
                     Cell cell = island.getCells()[i][j];
                     tasks.add(() -> {
                         taskForCell(cell, island);
-                        latch.countDown();
                         return null;
                     });
                     tasks.add(() -> {
                         cell.reproduce();
-                        latch.countDown();
                         return null;
                     });
+                    latch.countDown();
                 }
             }
             executorService.invokeAll(tasks);

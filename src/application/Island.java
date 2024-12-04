@@ -4,7 +4,12 @@ import entity.Plant;
 import settings.HerbivoreType;
 import settings.PredatorType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Island {
 
@@ -18,10 +23,27 @@ public class Island {
         this.height = height;
         cells = new Cell[width][height];
 
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        List<Callable<Void>> tasks = new ArrayList<>();
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                cells[i][j] = new Cell(i, j);
+                //cells[i][j] = new Cell(i, j);
+                final int finalX = i;
+                final int finalY = j;
+                tasks.add(() -> {
+                    cells[finalX][finalY] = new Cell(finalX, finalY);
+                    return null;
+                });
             }
+        }
+        try {
+            executor.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Ошибка при создании клеток", e);
+        } finally {
+            executor.shutdown();
         }
 
         System.out.println("Остров создан! Размер: " + width + "x" + height);
@@ -36,9 +58,9 @@ public class Island {
     }
 
     public void printCells() {
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                System.out.println(cells[i][j]);
+        for (Cell[] cell : cells) {
+            for (Cell value : cell) {
+                System.out.println(value);
             }
         }
     }

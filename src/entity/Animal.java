@@ -101,7 +101,6 @@ public abstract class Animal {
         }
     }
 
-
     public void move(Cell currentCell, Island island) {
         int attempts = 0;
         while (attempts < 10) {
@@ -111,14 +110,14 @@ public abstract class Animal {
                 //System.out.println("[" + targetCell.getX()+ "][" + targetCell.getY()+"]" + animal.name);
                 if (this instanceof Predator) {
                     PredatorType predatorType = PredatorType.valueOf(this.getName().toUpperCase());
-                    currentCell.getPredators().get(predatorType).remove(this); // удаление из текущей клетки
-                    targetCell.getPredators().get(predatorType).add((Predator) this); // добавление в новую клетку
+                    currentCell.getPredators().get(predatorType).remove(this);
+                    targetCell.getPredators().get(predatorType).add((Predator) this);
                 } else if (this instanceof Herbivore) {
                     HerbivoreType herbivoreType = HerbivoreType.valueOf(this.getName().toUpperCase());
-                    currentCell.getHerbivores().get(herbivoreType).remove(this); // удаление из текущей клетки
-                    targetCell.getHerbivores().get(herbivoreType).add((Herbivore) this); // добавление в новую клетку
+                    currentCell.getHerbivores().get(herbivoreType).remove(this);
+                    targetCell.getHerbivores().get(herbivoreType).add((Herbivore) this);
                 }
-                this.decreaseSatiety(this.getMaxSatiety() * 0.5, targetCell);
+                this.decreaseSatiety(this.getMaxSatiety() * 0.25, targetCell);
                 break;
             }
             attempts++;
@@ -193,7 +192,7 @@ public abstract class Animal {
     public void decreaseSatiety(double amount, Cell cell) {
         this.actualSatiety -= amount;
         if (this.actualSatiety <= 0) {
-            this.die(cell);//, "голод"
+            this.die(cell);
         }
     }
 
